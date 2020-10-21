@@ -11,6 +11,32 @@ exploit
 ls
 ls /
 
+
+--> You can start remapping UIDs in Docker Engine with the --userns-remap flag.
+sudo docker daemon --userns-remap=<user>
+> Remapped engine will basically operate in a new environment (in the 100000.100000 directory). 
+Every remapping will get its own directory (format XXX.YYY where XXX is the subordinate UID and YYY is the subordinate GID) 
+We can see it by :-
+sudo ls -F /var/lib/docker/100000.100000/
+
+
+--> Example for using No New Privileges flag to restrict additional access [no_new_privs]
+> Create a setuid binary that displays the effective uid
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+int main(int argc, char *argv[])
+{
+        printf("Effective uid: %d\n", geteuid());
+        return 0;
+}
+[$ dockerfiles]# make testnnp
+cc     testnnp.c   -o testnnp
+
+Add this to th edocker image.
+Run docker with command to get effective uuid :- docker run -it --rm --user=1000 --security-opt=no-new-privileges testnnp
+
 --> CONTAINER SECURITY USING FALCO
 > Sysdig Falco installation
 sudo -s
