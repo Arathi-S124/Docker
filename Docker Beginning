@@ -40,11 +40,18 @@ docker build -t <name> <build-directory>
 
 Run the newly creatd docker = docker run -d -p <host-ort:container-port> <name:ver>
 
---> we can access the standard out and standard error outputs using
+--> We can access the standard out and standard error outputs using
 docker logs redis-server.
 The Syslog log driver will write all the container logs to the central syslog on the host. 
 docker run -d --name redis-syslog --log-driver=syslog redis
 
--->With linking we don’t need to expose the source container
+--> With linking we don’t need to expose the source container
 --link <name or id>:alias
 Where name is the name of the container we’re linking to and alias is an alias for the link name.
+
+--> To prevent sensitive files or directories from being included by mistake in images, you can add a file named .dockerignore
+echo <file-to-ignore> >> .dockerignore
+> We can use it to exclude files which we don't want to be sent to the Docker Build Context during the build.
+echo <file> >> .dockerignore
+When we rebuild the image, it will be much faster as it doesn't have to copy the 100M file.
+docker build -t <name> .
